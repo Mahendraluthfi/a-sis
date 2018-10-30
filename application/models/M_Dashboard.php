@@ -64,6 +64,49 @@ class M_Dashboard extends CI_Model {
 		$this->db->where('YEAR(tanggal_pinjam)', $year);
 		return $this->db->get();
 	}
+
+	public function tabungan()
+	{
+		$this->db->select('sis_tabungandetail.*, sis_daftar.nama');
+		$this->db->from('sis_tabungandetail');
+		$this->db->join('sis_siswa', 'sis_siswa.id_siswa = sis_tabungandetail.id_siswa');
+		$this->db->join('sis_daftar', 'sis_daftar.id_daftar = sis_siswa.id_daftar');
+		$this->db->order_by('sis_tabungandetail.id', 'desc');
+		$this->db->limit(4);
+		$db = $this->db->get();
+		return $db;
+	}
+
+	public function pembayaran()
+	{
+		$this->db->select('sis_pembayaran.*, sis_daftar.nama, sis_pilihanbayar.nama_pilihan');
+		$this->db->from('sis_pembayaran');
+		$this->db->join('sis_siswa', 'sis_siswa.id_siswa = sis_pembayaran.id_siswa');
+		$this->db->join('sis_daftar', 'sis_daftar.id_daftar = sis_siswa.id_daftar');
+		$this->db->join('sis_pilihanbayar', 'sis_pilihanbayar.id = sis_pembayaran.id_jenis');
+		$this->db->order_by('sis_pembayaran.id', 'desc');
+		$this->db->limit(4);
+		$db = $this->db->get();
+		return $db;
+	}
+
+	public function tottab($date)
+	{
+		$this->db->select('SUM(debit) as a, SUM(kredit) as b');
+		$this->db->from('sis_tabungandetail');
+		$this->db->where('date', $date);
+		$db = $this->db->get();
+		return $db;
+	}
+
+	public function totpem($date)
+	{
+		$this->db->select('SUM(bayar) as tot');	
+		$this->db->from('sis_pembayaran');
+		$this->db->where('date', $date);
+		$db = $this->db->get();
+		return $db;
+	}
 }
 
 /* End of file M_Dashboard.php */
